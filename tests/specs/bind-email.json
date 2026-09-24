@@ -7,7 +7,7 @@
           {
             "method": "sendMessage",
             "payload": {
-              "text": "User submits email address to bind (free-form typed input required)"
+            "text": "Please enter your email or use /bind <email>"
             }
           }
         ],

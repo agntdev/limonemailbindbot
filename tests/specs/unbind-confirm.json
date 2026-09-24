@@ -7,7 +7,7 @@
           {
             "method": "sendMessage",
             "payload": {
-              "text": "Start unbind flow (asks confirmation via buttons)"
+            "text": "No email is bound yet. Tap Bind email to add one."
             }
           }
         ],

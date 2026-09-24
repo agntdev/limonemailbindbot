@@ -1,17 +1,13 @@
 import { Composer } from "grammy";
+import type { Ctx } from "../bot.js";
+import { registerMainMenuItem } from "../toolkit/index.js";
+import { codePrompt } from "../email-shared.js";
 
-// SCAFFOLD — generated from the bot blueprint BEFORE the agent runs.
-// Keep a LIVE registration (.command / .callbackQuery / …) so this feature is
-// never an empty stub. Replace the reply body with real logic + copy; if you
-// change the user-facing text, update tests/specs to match EXACTLY.
-// Do NOT rewrite src/bot.ts — buildBot() already auto-loads this module.
-// Menu: wire this into /start via registerMainMenuItem({ label: "Enter code", data: "verify:start" }) if the toolkit exposes it.
-
-const composer = new Composer();
-
+registerMainMenuItem({ label: "Enter code", data: "verify:start", order: 20 });
+const composer = new Composer<Ctx>();
 composer.callbackQuery("verify:start", async (ctx) => {
   await ctx.answerCallbackQuery();
-  await ctx.reply("Prompt to enter the verification code (ForceReply)");
+  ctx.session.step = "code";
+  await ctx.reply("Please enter the 6-digit verification code.", { reply_markup: codePrompt() });
 });
-
 export default composer;

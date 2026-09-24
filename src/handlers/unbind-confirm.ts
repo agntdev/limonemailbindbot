@@ -1,17 +1,26 @@
 import { Composer } from "grammy";
+import type { Ctx } from "../bot.js";
+import { inlineButton, inlineKeyboard, registerMainMenuItem } from "../toolkit/index.js";
+import { audit, maskEmail, notifyAdmin, removePersistedBinding } from "../email-shared.js";
 
-// SCAFFOLD — generated from the bot blueprint BEFORE the agent runs.
-// Keep a LIVE registration (.command / .callbackQuery / …) so this feature is
-// never an empty stub. Replace the reply body with real logic + copy; if you
-// change the user-facing text, update tests/specs to match EXACTLY.
-// Do NOT rewrite src/bot.ts — buildBot() already auto-loads this module.
-// Menu: wire this into /start via registerMainMenuItem({ label: "Unbind", data: "unbind:confirm" }) if the toolkit exposes it.
-
-const composer = new Composer();
-
-composer.callbackQuery("unbind:confirm", async (ctx) => {
+registerMainMenuItem({ label: "Unbind", data: "unbind:confirm", order: 40 });
+const composer = new Composer<Ctx>();
+async function ask(ctx: Ctx): Promise<void> {
+  if (!ctx.session.binding) { await ctx.reply("No email is bound yet. Tap Bind email to add one."); return; }
+  ctx.session.step = "confirm_unbind";
+  await ctx.reply("Remove your bound email?", { reply_markup: inlineKeyboard([[inlineButton("Yes, unbind", "unbind:yes"), inlineButton("Keep it", "unbind:no")]]) });
+}
+composer.callbackQuery("unbind:confirm", async (ctx) => { await ctx.answerCallbackQuery(); await ask(ctx); });
+composer.callbackQuery("unbind:yes", async (ctx) => {
   await ctx.answerCallbackQuery();
-  await ctx.reply("Start unbind flow (asks confirmation via buttons)");
+  const b = ctx.session.binding;
+  if (!b) { await ctx.reply("No email is bound yet. Tap Bind email to add one."); return; }
+  audit(ctx, "unbind", b.email, "user");
+  ctx.session.binding = undefined; ctx.session.token = undefined; ctx.session.step = undefined;
+  await removePersistedBinding(ctx, b.telegramId);
+  await notifyAdmin(ctx, `Email unbound by ${ctx.from!.id} (${maskEmail(b.email)}).`);
+  await ctx.reply("Your email has been unbound.");
 });
-
+composer.callbackQuery("unbind:no", async (ctx) => { await ctx.answerCallbackQuery(); ctx.session.step = undefined; await ctx.editMessageText("Your email remains bound."); });
+export { ask };
 export default composer;
