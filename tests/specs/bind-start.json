@@ -7,7 +7,7 @@
           {
             "method": "sendMessage",
             "payload": {
-              "text": "Begin binding flow (prompts for email or suggests /bind)"
+              "text": "Please enter your email or use /bind <email>"
             }
           }
         ],

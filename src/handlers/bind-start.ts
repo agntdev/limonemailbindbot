@@ -1,17 +1,13 @@
 import { Composer } from "grammy";
+import type { Ctx } from "../bot.js";
+import { registerMainMenuItem } from "../toolkit/index.js";
+import { emailPrompt } from "../email-shared.js";
 
-// SCAFFOLD — generated from the bot blueprint BEFORE the agent runs.
-// Keep a LIVE registration (.command / .callbackQuery / …) so this feature is
-// never an empty stub. Replace the reply body with real logic + copy; if you
-// change the user-facing text, update tests/specs to match EXACTLY.
-// Do NOT rewrite src/bot.ts — buildBot() already auto-loads this module.
-// Menu: wire this into /start via registerMainMenuItem({ label: "Bind email", data: "bind:start" }) if the toolkit exposes it.
-
-const composer = new Composer();
-
+registerMainMenuItem({ label: "Bind email", data: "bind:start", order: 10 });
+const composer = new Composer<Ctx>();
 composer.callbackQuery("bind:start", async (ctx) => {
   await ctx.answerCallbackQuery();
-  await ctx.reply("Begin binding flow (prompts for email or suggests /bind)");
+  ctx.session.step = "email";
+  await ctx.reply("Please enter your email or use /bind <email>", { reply_markup: emailPrompt() });
 });
-
 export default composer;

@@ -7,7 +7,7 @@
           {
             "method": "sendMessage",
             "payload": {
-              "text": "Admin-only: list current bindings (works only in ADMIN_CHAT_ID)"
+              "text": "Owner access isn't set up yet."
             }
           }
         ],

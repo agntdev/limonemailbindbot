@@ -1,15 +1,14 @@
 import { Composer } from "grammy";
+import type { Ctx } from "../bot.js";
+import { requireOwner } from "../toolkit/index.js";
+import { listPersistedBindings, maskEmail } from "../email-shared.js";
 
-// SCAFFOLD — generated from the bot blueprint BEFORE the agent runs.
-// Keep a LIVE registration (.command / .callbackQuery / …) so this feature is
-// never an empty stub. Replace the reply body with real logic + copy; if you
-// change the user-facing text, update tests/specs to match EXACTLY.
-// Do NOT rewrite src/bot.ts — buildBot() already auto-loads this module.
-
-const composer = new Composer();
-
+const composer = new Composer<Ctx>();
 composer.command("list_bindings", async (ctx) => {
-  await ctx.reply("Admin-only: list current bindings (works only in ADMIN_CHAT_ID)");
+  if (!(await requireOwner(ctx as never))) return;
+  const bindings = await listPersistedBindings(ctx);
+  if (bindings.length === 0) { await ctx.reply("No bindings yet."); return; }
+  const lines = bindings.map((b) => `${b.telegramId} · ${b.displayName} · ${maskEmail(b.email)} · ${b.verified ? "verified" : "pending"}`);
+  await ctx.reply(`Current bindings\n${lines.join("\n")}`);
 });
-
 export default composer;

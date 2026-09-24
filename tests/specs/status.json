@@ -7,7 +7,7 @@
           {
             "method": "sendMessage",
             "payload": {
-              "text": "Show current bound email and verification state"
+            "text": "No email is bound yet. Tap Bind email to add one."
             }
           }
         ],

@@ -7,7 +7,7 @@
           {
             "method": "sendMessage",
             "payload": {
-              "text": "Prompt to enter the verification code (ForceReply)"
+            "text": "Please enter the 6-digit verification code."
             }
           }
         ],
