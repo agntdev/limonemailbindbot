@@ -1,0 +1,20 @@
+[
+  {
+    "name": "Bind email",
+    "steps": [
+      {
+        "expect": [
+          {
+            "method": "sendMessage",
+            "payload": {
+              "text": "Begin binding flow (prompts for email or suggests /bind)"
+            }
+          }
+        ],
+        "send": {
+          "callback": "bind:start"
+        }
+      }
+    ]
+  }
+]
